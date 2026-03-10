@@ -1,11 +1,11 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Athlete Recovery AI"
-    # We will set the real DB URL later, this is a placeholder
-    DATABASE_URL: str = "postgresql://postgres:password@localhost/nutrition_db"
-    
+    GROQ_API_KEY: str
+    database_url: str = ""  # kept for future auth, not used yet
+
     class Config:
         env_file = ".env"
+        extra = "allow"  # allows any extra vars in .env without crashing
 
 settings = Settings()
