@@ -1,17 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import os
-from dotenv import load_dotenv
+from app.core.config import settings
 
-load_dotenv()  # Load the .env file
-
-# Get the URL
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
-
-# Create the engine
-# check_same_thread=False is ONLY for SQLite. Since we are using Postgres, we remove it.
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-
+engine = create_engine(settings.database_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
