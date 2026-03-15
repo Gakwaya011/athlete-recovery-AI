@@ -3,10 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.endpoints.chat import router as chat_router
 from app.api.v1.endpoints.auth import router as auth_router
 from app.db.session import engine
-from app.db.models import User
 from app.db.base_class import Base
 
-# Create tables on startup
+# Import all models so Base knows about them and creates tables
+from app.db.models import User, ChatSession, ChatMessage, CaloriePrediction
+
+# Create all tables on startup
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="nutri_athlete AI", version="1.0.0")
