@@ -8,17 +8,26 @@ import { SuggestionCards } from './SuggestionCards';
 import { Logo } from '../ui/Logo';
 
 interface ChatWindowProps {
-  isDarkMode: boolean;
-  onToggleDark: () => void;
-  onMenuClick: () => void;
+  isDarkMode:    boolean;
+  onToggleDark:  () => void;
+  onMenuClick:   () => void;
+  initialMessages?: Message[];
+  initialSessionId?: number | null;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ isDarkMode, onToggleDark, onMenuClick }) => {
-  const [messages, setMessages]   = useState<Message[]>([]);
-  const [input, setInput]         = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const bottomRef                 = useRef<HTMLDivElement>(null);
-  const inputRef                  = useRef<HTMLTextAreaElement>(null);
+export const ChatWindow: React.FC<ChatWindowProps> = ({
+  isDarkMode,
+  onToggleDark,
+  onMenuClick,
+  initialMessages   = [],
+  initialSessionId  = null,
+}) => {
+  const [messages, setMessages]     = useState<Message[]>(initialMessages);
+  const [input, setInput]           = useState('');
+  const [isLoading, setIsLoading]   = useState(false);
+  const [sessionId, setSessionId]   = useState<number | null>(initialSessionId);
+  const bottomRef                   = useRef<HTMLDivElement>(null);
+  const inputRef                    = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -35,8 +44,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ isDarkMode, onToggleDark
     setIsLoading(true);
 
     try {
-      const data = await sendMessage(newMessages);
+      const data = await sendMessage(newMessages, sessionId);
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      if (data.session_id) setSessionId(data.session_id);
     } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',
@@ -65,7 +75,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ isDarkMode, onToggleDark
         <div className="flex items-center gap-3">
           <button
             onClick={onMenuClick}
-            className="lg:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            className="lg:hidden text-gray-500 dark:text-gray-400"
           >
             <Menu size={20} />
           </button>

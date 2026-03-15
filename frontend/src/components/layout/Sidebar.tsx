@@ -1,29 +1,38 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Plus, Search, Home, FolderOpen, Clock, Settings, LogOut } from 'lucide-react';
+import { Plus, Home, FolderOpen, Clock, Settings, LogOut, Flame } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../ui/Logo';
 
 interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen:      boolean;
+  onClose:     () => void;
+  onNewChat?:  () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNewChat }) => {
+  const navigate  = useNavigate();
+  const location  = useLocation();
   const { user, logout } = useAuth();
 
   const navItems = [
-    { icon: <Plus size={16} />,       label: 'New Chat',  path: '/chat',      action: true },
-    { icon: <Search size={16} />,     label: 'Search',    path: '/search' },
     { icon: <Home size={16} />,       label: 'Home',      path: '/dashboard' },
+    { icon: <Flame size={16} />,      label: 'Calories',  path: '/calories' },
     { icon: <FolderOpen size={16} />, label: 'My Plans',  path: '/history' },
     { icon: <Clock size={16} />,      label: 'Recent',    path: '/history' },
   ];
 
   const handleNav = (path: string) => {
     navigate(path);
+    onClose();
+  };
+
+  const handleNewChat = () => {
+    if (onNewChat) {
+      onNewChat();
+    } else {
+      navigate('/chat', { state: { new: true } });
+    }
     onClose();
   };
 
@@ -47,19 +56,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <Logo collapsed />
         </div>
 
+        {/* New Chat button */}
+        <div className="flex items-center justify-center py-3">
+          <button
+            onClick={handleNewChat}
+            title="New Chat"
+            className="w-10 h-10 rounded-xl flex items-center justify-center
+                       bg-amber-500 text-white hover:bg-amber-400 transition-colors"
+          >
+            <Plus size={16} />
+          </button>
+        </div>
+
         {/* Nav icons */}
-        <nav className="flex flex-col items-center gap-1 py-4 flex-1">
+        <nav className="flex flex-col items-center gap-1 py-2 flex-1">
           {navItems.map((item, i) => (
             <button
               key={i}
               onClick={() => handleNav(item.path)}
               title={item.label}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors
-                ${item.action
-                  ? 'bg-amber-500 text-white hover:bg-amber-400'
-                  : location.pathname === item.path
-                    ? 'bg-white dark:bg-[#2a2723] text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-400 dark:text-gray-500 hover:bg-white dark:hover:bg-[#2a2723] hover:text-gray-900 dark:hover:text-white'
+                ${location.pathname === item.path
+                  ? 'bg-white dark:bg-[#2a2723] text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-400 dark:text-gray-500 hover:bg-white dark:hover:bg-[#2a2723] hover:text-gray-900 dark:hover:text-white'
                 }`}
             >
               {item.icon}
@@ -71,9 +90,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className="flex flex-col items-center gap-2 py-4 border-t border-gray-200 dark:border-[#2e2b27]">
           <button
             title="Settings"
-            className="w-10 h-10 rounded-xl flex items-center justify-center 
-                       text-gray-400 dark:text-gray-500 
-                       hover:bg-white dark:hover:bg-[#2a2723] 
+            className="w-10 h-10 rounded-xl flex items-center justify-center
+                       text-gray-400 dark:text-gray-500
+                       hover:bg-white dark:hover:bg-[#2a2723]
                        hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <Settings size={16} />
@@ -81,16 +100,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <button
             onClick={() => { logout(); navigate('/'); }}
             title="Sign out"
-            className="w-10 h-10 rounded-xl flex items-center justify-center 
-                       text-gray-400 dark:text-gray-500 
-                       hover:bg-white dark:hover:bg-[#2a2723] 
+            className="w-10 h-10 rounded-xl flex items-center justify-center
+                       text-gray-400 dark:text-gray-500
+                       hover:bg-white dark:hover:bg-[#2a2723]
                        hover:text-red-500 transition-colors"
           >
             <LogOut size={16} />
           </button>
           <div
             title={user?.full_name}
-            className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center 
+            className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center
                        text-white text-xs font-bold cursor-pointer mt-1"
           >
             {user?.full_name?.[0]?.toUpperCase() || 'A'}

@@ -6,7 +6,8 @@ import LoginPage     from './pages/LoginPage';
 import RegisterPage  from './pages/RegisterPage';
 import ChatPage      from './pages/ChatPage';
 import DashboardPage from './pages/DashboardPage';
-import HistoryPage   from './pages/HistoryPage';
+import HistoryPage     from './pages/HistoryPage';
+import CaloriesPage    from './pages/CaloriesPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -27,6 +28,7 @@ function AppRoutes() {
       <Route path="/chat"      element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/history"   element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+      <Route path="/calories"  element={<ProtectedRoute><CaloriesPage /></ProtectedRoute>} />
       <Route path="*"          element={<Navigate to="/" replace />} />
     </Routes>
   );
