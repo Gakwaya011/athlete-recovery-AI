@@ -1,0 +1,23 @@
+{
+  "feature_cols": [
+    "Gender_encoded",
+    "Age",
+    "Height",
+    "Weight",
+    "Duration",
+    "Heart_Rate",
+    "Body_Temp",
+    "BMI",
+    "Weight_Duration",
+    "HR_Duration"
+  ],
+  "gender_encoding": {
+    "male": 1,
+    "female": 0
+  },
+  "model_type": "XGBoost Regressor",
+  "r2_score": 0.9996,
+  "rmse": 1.28,
+  "mae": 0.89,
+  "training_samples": 12000
+}
