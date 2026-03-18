@@ -1,338 +1,222 @@
-# Athlete Recovery AI: Predictive Recovery Engine
+# nutri_athlete AI 🏋️
 
-**GitHub Repo:** https://github.com/Gakwaya011/athlete-recovery-AI  
-**Live API Demo:** https://athlete-recovery-ai.onrender.com/docs  
-**Video Demonstration:** https://www.loom.com/share/422f7ed12dae46849046eb44aeb17eed
+> AI-powered sports nutrition assistant for East African athletes — personalized recovery meal plans using local foods, RAG-powered science, and ML-based calories prediction.
+
+**GitHub Repo:** https://github.com/Gakwaya011/athlete-recovery-AI
+**Live App:** https://athlete-recovery-ai.vercel.app
+**Backend API:** https://athlete-recovery-ai.onrender.com
+**Video Demo:** https://drive.google.com/file/d/1nRW5ONzEkljlcpa5NlIYCOIyhprG0QaM/view?usp=sharing
+
+---
 
 ## Overview
 
-Athlete Recovery AI is a specialized machine learning platform designed to optimize post-training recovery for athletes by predicting calories burned during a workout. This MVP focuses on a high-precision Machine Learning engine with a localized approach to fitness accessibility.
+nutri_athlete AI addresses a critical gap in sports nutrition technology for East African athletes. Most nutrition apps recommend Western-centric foods and require expensive wearables. This platform:
 
-Our MVP addresses critical gaps in fitness technology through two core principles:
-
-**Hardware Accessibility:** By removing dependencies on expensive wearable sensors (Heart Rate/Body Temperature), the system serves athletes regardless of their access to specialized hardware.
-
-**Nutritional Localization:** While many apps suggest Western-centric diets (whey protein, blueberries, salmon), this platform is being engineered to recommend Rwandan local foods (e.g., Ibigori, Ibirayi, Amashaza) that provide the same recovery macronutrients at a fraction of the cost.
-
----
-
-## Key Features
-
-- ✅ **Wearable-Independent Predictions:** Works with basic fitness inputs, no expensive sensors required
-- ✅ **Localized Recovery Protocols:** Recommends affordable, locally-available foods for optimal recovery
-- ✅ **Real-Time API:** FastAPI backend for instant caloric burn predictions
-- ✅ **Production-Ready:** Deployed on Render with automated CI/CD via GitHub
-- ✅ **Accessibility-Focused:** Designed for athletes regardless of hardware or budget constraints
+- Recommends **local East African foods** (Ugali, Matoke, Isambaza, Ikivuguto) for recovery
+- Uses **peer-reviewed sports science** (FIFA, ACSM, IOC, UEFA) via RAG pipeline
+- Predicts **calories burned** using a trained XGBoost model (R²=0.9996)
+- Works **without expensive wearable devices** for the calories tracker
 
 ---
 
-## Machine Learning Pipeline
+## Features
 
-### Data Engineering & Feature Selection
-
-Our ML approach prioritizes real-world accessibility and local context:
-
-**Strategic Feature Selection:** Dropped wearable-dependent features (Heart Rate, Body Temperature) to ensure the model functions in a local context without specialized sensors.
-
-**Correlation Analysis:** Through rigorous data exploration, Duration emerged as the primary predictor of caloric burn with an R-value of 0.96, indicating an extremely strong linear relationship.
-
-### Model Architecture
-
-**Algorithm:** XGBoost Regressor (Extreme Gradient Boosting)
-
-XGBoost is a decision-tree-based ensemble learning algorithm that uses a gradient boosting framework to iteratively improve predictions. This approach provides:
-
-- Fast training and inference speeds
-- Natural handling of non-linear relationships
-- Robust performance across diverse athlete profiles
-- Efficient memory usage suitable for cloud deployment
-
-### Performance Metrics
-
-| Metric | Value | Interpretation |
-|--------|-------|-----------------|
-| **R² Score** | 96.33% | Model explains 96.33% of caloric burn variance |
-| **Mean Absolute Error (MAE)** | 8.54 Calories | Average prediction error is ±8.54 calories |
-| **Accessibility** | Wearable-Free | No expensive sensors required |
+- 🤖 **RAG Nutrition Chatbot** — LLaMA 3.3 70B + ChromaDB retrieval from 4 peer-reviewed sports science PDFs
+- 🍽️ **Personalized Meal Plans** — local East African foods matched to athlete macros
+- 🔥 **Calories Burned Prediction** — XGBoost model trained on 15,000 samples (R²=0.9996, MAE=0.89)
+- 📊 **Workout History Graph** — calories burned vs energy needed over time
+- 🔐 **JWT Authentication** — secure user accounts with PostgreSQL
+- 🌍 **Deployed** — React frontend on Vercel, FastAPI backend on Render
 
 ---
 
-## Backend Architecture
+## Tech Stack
 
-### API Specification
-
-**Endpoint:** `POST /api/v1/calories/predict`
-
-**Request Body:**
-```json
-{
-  "age": 28,
-  "weight": 75,
-  "gender": "male",
-  "duration": 45
-}
-```
-
-**Response:**
-```json
-{
-  "predicted_calories": 287.5,
-  "confidence": "high",
-  "timestamp": "2026-02-10T14:30:00Z"
-}
-```
-
-### Technology Stack
-
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Web Framework** | FastAPI | High-performance async API |
-| **ML Algorithm** | XGBoost | Gradient boosting predictions |
-| **Model Serialization** | Pickle | Efficient binary model loading |
-| **ASGI Server** | Uvicorn | Production-grade async server |
-| **Deployment** | Render | Cloud hosting with auto CI/CD |
-| **Python Version** | 3.12 | Latest stable Python release |
-
-### Server-Side Logic
-
-The backend uses FastAPI to serve the XGBoost model with the following design principles:
-
-**Modular Routing:** The architecture is built using modular routing patterns, allowing for the easy addition of upcoming features like the localized nutrition engine.
-
-**Scalability:** The API endpoint is designed to handle multiple concurrent requests efficiently, making it suitable for scaling as user base grows.
-
-**Real-Time Inference:** Predictions are served in milliseconds, enabling interactive user experiences.
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React, TypeScript, Tailwind CSS, Recharts |
+| Backend | FastAPI, Python 3.11 |
+| AI/ML | Groq LLaMA 3.3 70B, RAG, ChromaDB, XGBoost |
+| Database | PostgreSQL (Render) |
+| Embeddings | HuggingFace BAAI/bge-large-en-v1.5 |
+| Deployment | Vercel (frontend), Render (backend) |
 
 ---
 
-## Setup and Installation
+## ML Model — Calories Prediction
+
+### Dataset
+- 15,000 samples from Kaggle fitness dataset
+- Features: Gender, Age, Height, Weight, Duration, Heart Rate, Body Temperature
+
+### Feature Engineering
+- BMI = Weight / Height²
+- Weight_Duration = Weight × Duration
+- HR_Duration = Heart Rate × Duration (most important feature: 61.4% importance)
+
+### Model Performance
+
+| Metric | Value |
+|--------|-------|
+| R² Score | 0.9996 (99.96%) |
+| RMSE | 1.28 calories |
+| MAE | 0.89 calories |
+| Algorithm | XGBoost Regressor |
+| Training samples | 12,000 |
+
+### Scientific Grounding (RAG Sources)
+- FIFA Nutrition for Football (2006)
+- ACSM/ADA Position Paper on Nutrition and Athletic Performance (2009)
+- IOC Nutrition Booklet (2012)
+- UEFA Expert Group Statement — Collins et al., BJSM (2020)
+
+---
+
+## Installation & Running Locally
 
 ### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- PostgreSQL database
 
-- Python 3.12+
-- Git
-- pip or conda package manager
-
-### Step 1: Clone the Repository
+### Backend Setup
 ```bash
 git clone https://github.com/Gakwaya011/athlete-recovery-AI.git
-cd athlete-recovery-AI
-```
-
-### Step 2: Create Virtual Environment
-```bash
-python3.12 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### Step 3: Install Dependencies
-```bash
+cd athlete-recovery-AI/backend
+python -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Step 4: Run the Development Server
-```bash
-uvicorn app.main:app --reload
+Create `.env` file in `backend/`:
+```
+GROQ_API_KEY=your_groq_api_key
+SECRET_KEY=your_secret_key
+database_url=postgresql://user:password@host/dbname?sslmode=require
 ```
 
-Your API will be available at `http://localhost:8000`
+Run backend:
+```bash
+uvicorn main:app --reload --port 8000
+```
 
-### Step 5: Access API Documentation
+### Frontend Setup
+```bash
+cd ../frontend
+npm install
+```
 
-Navigate to `http://localhost:8000/docs` to explore the interactive Swagger UI and test endpoints in real-time.
+Create `.env` file in `frontend/`:
+```
+REACT_APP_API_URL=http://localhost:8000
+```
+
+Run frontend:
+```bash
+npm start
+```
+
+Open `http://localhost:3000`
 
 ---
 
-## API Usage Examples
-
-### Using cURL
-```bash
-curl -X POST "http://localhost:8000/api/v1/calories/predict" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "age": 28,
-    "weight": 75,
-    "gender": "male",
-    "duration": 45
-  }'
+## Project Structure
 ```
-
-### Using Python
-```python
-import requests
-
-url = "http://localhost:8000/api/v1/calories/predict"
-data = {
-    "age": 28,
-    "weight": 75,
-    "gender": "male",
-    "duration": 45
-}
-
-response = requests.post(url, json=data)
-result = response.json()
-print(f"Predicted Calories: {result['predicted_calories']}")
-```
-
-### Using JavaScript
-```javascript
-const data = {
-  age: 28,
-  weight: 75,
-  gender: "male",
-  duration: 45
-};
-
-fetch("http://localhost:8000/api/v1/calories/predict", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(data)
-})
-  .then(res => res.json())
-  .then(result => console.log(`Predicted Calories: ${result.predicted_calories}`));
+athlete-recovery-AI/
+├── backend/
+│   ├── app/
+│   │   ├── api/v1/endpoints/   # FastAPI routes (chat, auth, calories)
+│   │   ├── db/                 # SQLAlchemy models
+│   │   ├── services/           # RAG agent (LLM + ChromaDB)
+│   │   └── core/               # Config and settings
+│   ├── data/
+│   │   ├── East_Africa_Food_Dataset_FINAL.csv
+│   │   ├── calories_model.pkl  # Trained XGBoost model
+│   │   └── science_db_pro/     # ChromaDB vector store
+│   └── main.py
+├── frontend/
+│   └── src/
+│       ├── pages/              # Chat, Dashboard, Calories, History
+│       ├── components/         # Sidebar, ChatWindow, Logo
+│       └── api/                # Axios API calls
+└── ML/
+    └── notebooks/              # XGBoost training notebook
 ```
 
 ---
 
 ## Deployment
 
-The project is currently deployed on **Render** at https://athlete-recovery-ai.onrender.com/docs
+### Backend — Render Web Service
+- **Platform:** Render
+- **Runtime:** Python 3.11
+- **Build Command:** `pip install -r requirements.txt`
+- **Start Command:** `uvicorn main:app --host 0.0.0.0 --port $PORT`
+- **Environment Variables:** `GROQ_API_KEY`, `SECRET_KEY`, `database_url`
 
-### Deployment Configuration
+### Frontend — Vercel
+- **Platform:** Vercel
+- **Framework:** Create React App
+- **Root Directory:** `frontend`
+- **Build Command:** `npm run build`
+- **Environment Variables:** `REACT_APP_API_URL`
 
-- **Platform:** Render (Cloud Hosting)
-- **Runtime:** Python 3.12
-- **Server:** Uvicorn with Gunicorn
-- **CI/CD:** Automated deployment from GitHub push
-
-### Accessing Live API
-```bash
-curl -X POST "https://athlete-recovery-ai.onrender.com/api/v1/calories/predict" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "age": 28,
-    "weight": 75,
-    "gender": "male",
-    "duration": 45
-  }'
-```
-
----
-
-## Future Roadmap & Localized Nutrition Strategy
-
-### Phase 1: MVP (Current ✅)
-- ✅ Core XGBoost prediction engine
-- ✅ FastAPI backend with REST API
-- ✅ Render deployment with CI/CD
-- ✅ Swagger/OpenAPI documentation
-
-### Phase 2: Localized Recovery Protocols (In Progress)
-
-The next phase of development involves the `nutrition.py` endpoint. Instead of standard Western recovery suggestions, the system will map caloric needs to locally available Rwandan ingredients:
-
-**Carbohydrate Replenishment:** Focus on Sweet Potatoes (Ibijumba) and Cassava (Imyumbati)
-- These are nutrient-dense, affordable staples across Rwanda
-- Provide rapid glucose replenishment for muscle glycogen restoration
-- Culturally relevant and widely accessible
-
-**Protein Recovery:** Focus on Beans (Ibihyimbo) and Groundnuts (Ibigori)
-- Complete protein sources with essential amino acids
-- Cost-effective compared to imported protein supplements
-- Support muscle repair and adaptation after training
-
-**Cost Efficiency:** The platform will provide athletes with a recovery plan that is:
-- Scientifically accurate in meeting macronutrient requirements
-- Economically feasible within the local market
-- Culturally appropriate and readily available
-- Nutritionally complete without reliance on expensive imports
+### Database — Render PostgreSQL
+- Free tier PostgreSQL
+- SSL required: `?sslmode=require`
+- Tables: `users`, `chat_sessions`, `chat_messages`, `calorie_predictions`
 
 ---
 
 ## Testing
 
-Run the test suite:
-```bash
-pytest tests/
-```
+The system was tested under different conditions:
 
-Run with coverage:
-```bash
-pytest --cov=app tests/
-```
+**Different sports:** Football, basketball, running, gym, volleyball, cycling
 
----
+**Gatekeeper testing:** Non-sport inputs (hide and seek, coding) correctly rejected
 
-## Project Structure
-```
-athlete-recovery-ai/
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   │   └── v1/
-│   │   │       └── endpoints/
-│   │   │           ├── auth.py
-│   │   │           ├── calories.py
-│   │   │           └── nutrition.py
-│   │   ├── pycache/
-│   │   ├── core/
-│   │   ├── db/
-│   │   ├── models/
-│   │   │   └── calorie_model.pkl
-│   │   ├── schemas/
-│   │   └── services/
-│   ├── main.py              # FastAPI application entry point
-│   ├── venv/
-│   ├── .env
-│   ├── .gitignore
-│   ├── Procfile
-│   └── requirements.txt
-├── ML/
-│   ├── data/
-│   │   └── calories.csv
-│   ├── models/
-│   │   └── calorie_model.pkl
-│   └── notebooks/
-│       └── energy_expenditure.ipynb
-└── README.md
-```
+**Different athlete profiles:**
+- Male vs female (different iron and carb recommendations)
+- Youth vs adult vs veteran (age-adjusted macros)
+- Light vs moderate vs heavy intensity
+
+**Calories prediction tested with:**
+- Different genders, ages, weights, durations
+- Light workout (yoga 10min) → 37 kcal ✅
+- Heavy workout (football 30min, HR 155) → 237 kcal ✅
 
 ---
 
-## Performance Metrics
+## API Endpoints
 
-- **Current Capacity:** ~10,000 predictions/day
-- **Response Time:** <100ms average latency
-- **Model Accuracy:** 96.33% R² Score
-- **Prediction Precision:** ±8.54 calories MAE
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Register new user |
+| POST | `/api/v1/auth/login` | Login and get JWT token |
+| POST | `/api/v1/chat` | Send message to nutrition agent |
+| GET | `/api/v1/sessions` | Get all chat sessions |
+| GET | `/api/v1/sessions/{id}` | Get session with messages |
+| GET | `/api/v1/stats` | Get dashboard stats |
+| POST | `/api/v1/predict-calories` | Predict calories burned |
+| GET | `/api/v1/calorie-history` | Get calorie prediction history |
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. See LICENSE file for details.
-
----
-
-## Support & Contact
-
-Have questions or feedback?
-
-- **GitHub Issues:** https://github.com/Gakwaya011/athlete-recovery-AI/issues
-- **Live API:** https://athlete-recovery-ai.onrender.com/docs
-- **Video Demo:** https://www.loom.com/share/422f7ed12dae46849046eb44aeb17eed
+MIT License
 
 ---
 
 ## Acknowledgments
 
-- **XGBoost:** The gradient boosting framework powering our predictions
-- **FastAPI:** Modern, fast web framework for building APIs
-- **Render:** Cloud platform enabling seamless deployment
-- **Rwandan Athlete Community:** Inspiration for localized nutrition approach
+- Groq for LLaMA 3.3 70B inference
+- HuggingFace for BAAI/bge-large-en-v1.5 embeddings
+- FIFA, ACSM, IOC, UEFA for peer-reviewed sports nutrition guidelines
+- Kaggle for the calories prediction dataset
 
 ---
 
-**Built to empower African athletes with accessible, localized recovery science**
-
-*Last Updated: February 2026*
+*Built to empower East African athletes with accessible, localized recovery science* 🌍
