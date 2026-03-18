@@ -8,7 +8,7 @@ from typing import List, Optional
 from datetime import datetime
 
 from app.schemas.chat import ChatRequest, ChatResponse, SessionOut, SessionDetailOut
-from app.services.agent import agent
+from app.services.agent import get_agent
 from app.db.session import get_db
 from app.db.models import ChatSession, ChatMessage, User, CaloriePrediction
 from app.api.v1.endpoints.auth import get_current_user
@@ -62,17 +62,25 @@ def _predict_calories(
 
 
 # ── Chat endpoint ────────────────────────────────────────
+# ── Chat endpoint ────────────────────────────────────────
 @router.post("/chat", response_model=ChatResponse)
 async def chat(
     request:      ChatRequest,
     db:           Session = Depends(get_db),
     current_user: User    = Depends(get_current_user),
 ):
+    # 👇 ADD THIS LINE TO LAZY LOAD THE AI
+    agent = get_agent()
+    
     messages = [{"role": m.role, "content": m.content} for m in request.messages]
+    
+    # Now it will use the lazy-loaded agent perfectly
     reply, profile_confirmed = agent.chat(messages)
 
     session_id = request.session_id
     session    = None
+    
+    # ... keep the rest of your code exactly the same!
 
     try:
         if session_id:
