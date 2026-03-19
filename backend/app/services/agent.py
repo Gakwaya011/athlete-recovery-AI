@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from langchain_groq import ChatGroq
 from langchain_community.vectorstores import Chroma
 
-# 👇 CHANGE 1: We updated this import line
-from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings 
+# 👇 REVERTED: Back to the powerful local embeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings 
 
 from app.core.config import settings
 
@@ -30,14 +30,9 @@ class NutritionAgent:
         print(f"CSV_PATH: {CSV_PATH}")
         print(f"DB_DIR: {DB_DIR}")
 
-        # 👇 CHANGE 2: We updated the embedding connection logic here
-        print("Connecting to Hugging Face Inference API...")
-        hf_token = os.getenv("HF_TOKEN")
-        
-        embeddings = HuggingFaceInferenceAPIEmbeddings(
-            api_key=hf_token, 
-            model_name="BAAI/bge-large-en-v1.5"
-        )
+        # 👇 REVERTED: Loading directly into 16GB RAM!
+        print("Loading massive 1.2GB embeddings into 16GB RAM...")
+        embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-large-en-v1.5")
 
         print("Loading vector store...")
         self.retriever = Chroma(
