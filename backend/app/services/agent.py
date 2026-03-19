@@ -2,7 +2,10 @@ import os, re, json, random, pandas as pd
 from dataclasses import dataclass
 from langchain_groq import ChatGroq
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
+
+# 👇 CHANGE 1: We updated this import line
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings 
+
 from app.core.config import settings
 
 # ── Paths ──
@@ -27,8 +30,14 @@ class NutritionAgent:
         print(f"CSV_PATH: {CSV_PATH}")
         print(f"DB_DIR: {DB_DIR}")
 
-        print("Loading embeddings...")
-        embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-large-en-v1.5")
+        # 👇 CHANGE 2: We updated the embedding connection logic here
+        print("Connecting to Hugging Face Inference API...")
+        hf_token = os.getenv("HF_TOKEN")
+        
+        embeddings = HuggingFaceInferenceAPIEmbeddings(
+            api_key=hf_token, 
+            model_name="BAAI/bge-large-en-v1.5"
+        )
 
         print("Loading vector store...")
         self.retriever = Chroma(
