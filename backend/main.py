@@ -13,13 +13,19 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="nutri_athlete AI", version="1.0.0")
 
+# In main.py
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[
+        "http://localhost:5173",                 # For your local testing
+        "http://localhost:3000",                 # If your local uses port 3000
+        "https://athlete-recovery-ai.vercel.app" # The EXACT Vercel URL (No slash at the end!)
+    ],
+    allow_credentials=True,                      # THIS is what fixes the login/chat tokens!
+    allow_methods=["*"],                         # Allows POST, GET, DELETE, OPTIONS
+    allow_headers=["*"],                         # Allows Authorization headers
 )
-
 app.include_router(chat_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 
