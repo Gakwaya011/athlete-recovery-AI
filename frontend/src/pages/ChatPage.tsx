@@ -29,17 +29,16 @@ export default function ChatPage() {
     }
   }, [location.state]);
 
-  // Handle loading existing session from ?session=id
-  useEffect(() => {
+ useEffect(() => {
     const params    = new URLSearchParams(location.search);
     const sessionId = params.get('session');
     if (sessionId) {
       loadSession(parseInt(sessionId));
     } else {
-      // Fresh chat — reset
       setInitialMessages([]);
       setInitialSessionId(null);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   const loadSession = async (sessionId: number) => {

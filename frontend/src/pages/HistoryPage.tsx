@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, MessageSquare, Trash2, ChevronRight, Zap, Flame } from 'lucide-react';
+import { Clock, Trash2, ChevronRight, Flame } from 'lucide-react';
 import { Navbar } from '../components/layout/Navbar';
 import { Sidebar } from '../components/layout/Sidebar';
 import { useNavigate } from 'react-router-dom';
