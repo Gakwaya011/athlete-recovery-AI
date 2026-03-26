@@ -4,7 +4,7 @@
 
 **GitHub Repo:** https://github.com/Gakwaya011/athlete-recovery-AI
 **Live App:** https://athlete-recovery-ai.vercel.app
-**Backend API:** https://athlete-recovery-ai.onrender.com
+**Backend API:** https://huggingface.co/spaces/brillant024/athlete
 **Video Demo:** https://drive.google.com/file/d/1nRW5ONzEkljlcpa5NlIYCOIyhprG0QaM/view?usp=sharing
 
 ---
