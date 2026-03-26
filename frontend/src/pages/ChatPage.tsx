@@ -3,12 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Sidebar } from '../components/layout/Sidebar';
 import { ChatWindow } from '../components/chat/ChatWindow';
 import { Message } from '../types/chat';
+import { useDarkMode } from '../hooks/useDarkMode';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 export default function ChatPage() {
+  const { isDarkMode, toggleDark }            = useDarkMode();
   const [sidebarOpen, setSidebarOpen]         = useState(false);
-  const [isDarkMode, setIsDarkMode]           = useState(true);
   const [chatKey, setChatKey]                 = useState(0);
   const [initialMessages, setInitialMessages] = useState<Message[]>([]);
   const [initialSessionId, setInitialSessionId] = useState<number | null>(null);
@@ -17,11 +18,6 @@ export default function ChatPage() {
   const navigate                              = useNavigate();
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
-
-  // Handle new chat
-  useEffect(() => {
     if ((location.state as any)?.new) {
       setInitialMessages([]);
       setInitialSessionId(null);
@@ -29,7 +25,7 @@ export default function ChatPage() {
     }
   }, [location.state]);
 
- useEffect(() => {
+  useEffect(() => {
     const params    = new URLSearchParams(location.search);
     const sessionId = params.get('session');
     if (sessionId) {
@@ -50,18 +46,14 @@ export default function ChatPage() {
       });
       if (!res.ok) throw new Error('Session not found');
       const data = await res.json();
-
-      // Convert messages to our format
       const msgs: Message[] = (data.messages || []).map((m: any) => ({
         role:    m.role,
         content: m.content,
       }));
-
       setInitialMessages(msgs);
       setInitialSessionId(sessionId);
       setChatKey(prev => prev + 1);
     } catch (e) {
-      console.error('Failed to load session:', e);
       navigate('/chat');
     } finally {
       setLoadingSession(false);
@@ -78,11 +70,7 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen bg-[#f5f5f5] dark:bg-[#1c1a17] transition-colors">
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        onNewChat={handleNewChat}
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onNewChat={handleNewChat} />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {loadingSession ? (
           <div className="flex flex-col flex-1 items-center justify-center">
@@ -93,7 +81,7 @@ export default function ChatPage() {
           <ChatWindow
             key={chatKey}
             isDarkMode={isDarkMode}
-            onToggleDark={() => setIsDarkMode(!isDarkMode)}
+            onToggleDark={toggleDark}
             onMenuClick={() => setSidebarOpen(true)}
             initialMessages={initialMessages}
             initialSessionId={initialSessionId}

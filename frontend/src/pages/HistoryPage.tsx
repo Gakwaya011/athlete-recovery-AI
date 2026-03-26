@@ -3,6 +3,7 @@ import { Clock, Trash2, ChevronRight, Flame } from 'lucide-react';
 import { Navbar } from '../components/layout/Navbar';
 import { Sidebar } from '../components/layout/Sidebar';
 import { useNavigate } from 'react-router-dom';
+import { useDarkMode } from '../hooks/useDarkMode';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -18,20 +19,14 @@ interface Session {
 }
 
 export default function HistoryPage() {
+  const { isDarkMode, toggleDark }      = useDarkMode();
   const [sidebarOpen, setSidebarOpen]   = useState(false);
-  const [isDarkMode, setIsDarkMode]     = useState(true);
   const [sessions, setSessions]         = useState<Session[]>([]);
   const [loading, setLoading]           = useState(true);
   const [deletingId, setDeletingId]     = useState<number | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    fetchSessions();
-  }, []);
+  useEffect(() => { fetchSessions(); }, []);
 
   const fetchSessions = async () => {
     try {
@@ -42,7 +37,6 @@ export default function HistoryPage() {
       const data = await res.json();
       setSessions(Array.isArray(data) ? data : []);
     } catch (e) {
-      console.error(e);
       setSessions([]);
     } finally {
       setLoading(false);
@@ -55,7 +49,7 @@ export default function HistoryPage() {
     try {
       const token = localStorage.getItem('mwili_token');
       await fetch(`${API_URL}/api/v1/sessions/${id}`, {
-        method:  'DELETE',
+        method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setSessions(prev => prev.filter(s => s.id !== id));
@@ -64,10 +58,6 @@ export default function HistoryPage() {
     } finally {
       setDeletingId(null);
     }
-  };
-
-  const openSession = (id: number) => {
-    navigate(`/chat?session=${id}`);
   };
 
   const formatDate = (dateStr: string) => {
@@ -104,7 +94,6 @@ export default function HistoryPage() {
     return '🏃';
   };
 
-  // Group sessions by date
   const groupedSessions = sessions.reduce((groups: Record<string, Session[]>, session) => {
     const date = new Date(session.created_at);
     const now  = new Date();
@@ -114,7 +103,7 @@ export default function HistoryPage() {
     else if (diff === 1) key = 'Yesterday';
     else if (diff <= 7)  key = 'Previous 7 Days';
     else if (diff <= 30) key = 'Previous 30 Days';
-    else                 key = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    else key = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     if (!groups[key]) groups[key] = [];
     groups[key].push(session);
     return groups;
@@ -128,11 +117,10 @@ export default function HistoryPage() {
           title="History"
           onMenuClick={() => setSidebarOpen(true)}
           isDarkMode={isDarkMode}
-          onToggleDark={() => setIsDarkMode(!isDarkMode)}
+          onToggleDark={toggleDark}
         />
         <main className="flex-1 overflow-y-auto px-6 py-8">
           <div className="max-w-3xl mx-auto">
-
             <div className="mb-6">
               <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
                 Chat History
@@ -157,10 +145,8 @@ export default function HistoryPage() {
                 <p className="text-gray-500 text-sm max-w-xs">
                   Your chat history will appear here after you complete your first nutrition session.
                 </p>
-                <button
-                  onClick={() => navigate('/chat')}
-                  className="mt-6 bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 py-2.5 rounded-xl transition-colors text-sm"
-                >
+                <button onClick={() => navigate('/chat')}
+                  className="mt-6 bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 py-2.5 rounded-xl transition-colors text-sm">
                   Start a session
                 </button>
               </div>
@@ -173,36 +159,26 @@ export default function HistoryPage() {
                     </p>
                     <div className="flex flex-col gap-2">
                       {groupSessions.map(session => (
-                        <div
-                          key={session.id}
-                          onClick={() => openSession(session.id)}
+                        <div key={session.id}
+                          onClick={() => navigate(`/chat?session=${session.id}`)}
                           className="group flex items-center gap-4 p-4 rounded-2xl
                                      bg-gray-50 dark:bg-[#2a2723] border border-gray-100
                                      dark:border-[#3a3630] hover:border-amber-500/50
-                                     dark:hover:border-amber-500/50 cursor-pointer
-                                     transition-all duration-200 hover:shadow-sm"
-                        >
-                          {/* Sport emoji */}
+                                     cursor-pointer transition-all duration-200 hover:shadow-sm">
                           <div className="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-900/20
                                           flex items-center justify-center text-xl flex-shrink-0">
                             {getSportEmoji(session.sport)}
                           </div>
-
-                          {/* Content */}
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">
                               {session.title}
                             </p>
                             <div className="flex items-center gap-3 mt-1 flex-wrap">
                               {session.sport && (
-                                <span className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                                  {session.sport}
-                                </span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400 capitalize">{session.sport}</span>
                               )}
                               {session.duration_mins && (
-                                <span className="text-xs text-gray-400">
-                                  ⏱ {session.duration_mins}min
-                                </span>
+                                <span className="text-xs text-gray-400">⏱ {session.duration_mins}min</span>
                               )}
                               {session.intensity && (
                                 <span className={`text-xs font-medium capitalize ${getIntensityColor(session.intensity)}`}>
@@ -211,8 +187,7 @@ export default function HistoryPage() {
                               )}
                               {session.calories_burned && (
                                 <span className="text-xs text-amber-500 flex items-center gap-1">
-                                  <Flame size={10} />
-                                  {session.calories_burned} kcal
+                                  <Flame size={10} /> {session.calories_burned} kcal
                                 </span>
                               )}
                               {session.goal && (
@@ -222,22 +197,15 @@ export default function HistoryPage() {
                               )}
                             </div>
                           </div>
-
-                          {/* Right side */}
                           <div className="flex items-center gap-2 flex-shrink-0">
-                            <span className="text-xs text-gray-400">
-                              {formatDate(session.created_at)}
-                            </span>
-                            <button
-                              onClick={(e) => deleteSession(session.id, e)}
+                            <span className="text-xs text-gray-400">{formatDate(session.created_at)}</span>
+                            <button onClick={(e) => deleteSession(session.id, e)}
                               className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg
                                          hover:bg-red-50 dark:hover:bg-red-900/20
-                                         text-gray-400 hover:text-red-500 transition-all"
-                            >
+                                         text-gray-400 hover:text-red-500 transition-all">
                               {deletingId === session.id
                                 ? <div className="w-3.5 h-3.5 border border-red-400 border-t-transparent rounded-full animate-spin" />
-                                : <Trash2 size={14} />
-                              }
+                                : <Trash2 size={14} />}
                             </button>
                             <ChevronRight size={16} className="text-gray-300 dark:text-gray-600 group-hover:text-amber-500 transition-colors" />
                           </div>

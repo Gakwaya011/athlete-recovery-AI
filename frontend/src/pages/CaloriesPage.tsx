@@ -6,6 +6,7 @@ import {
 } from 'recharts';
 import { Sidebar } from '../components/layout/Sidebar';
 import { Logo } from '../components/ui/Logo';
+import { useDarkMode } from '../hooks/useDarkMode';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -25,9 +26,9 @@ interface PredictionResult {
 }
 
 export default function CaloriesPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode]   = useState(true);
-  const [form, setForm]               = useState<FormData>({
+  const { isDarkMode, toggleDark }          = useDarkMode();
+  const [sidebarOpen, setSidebarOpen]       = useState(false);
+  const [form, setForm]                     = useState<FormData>({
     gender: 'male', age: '', height: '', weight: '',
     duration: '', heart_rate: '', body_temp: '',
   });
@@ -41,10 +42,6 @@ export default function CaloriesPage() {
   const [error, setError]               = useState('');
   const [chartData, setChartData]       = useState<any[]>([]);
   const [chartLoading, setChartLoading] = useState(true);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
 
   const fetchHistory = () => {
     const token = localStorage.getItem('mwili_token');
@@ -124,19 +121,16 @@ export default function CaloriesPage() {
             </button>
             <Logo size="sm" />
           </div>
-          <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
+          <button onClick={toggleDark}
             className="w-8 h-8 rounded-full flex items-center justify-center
                        bg-gray-100 dark:bg-[#2a2723] text-gray-500 dark:text-gray-400
-                       hover:bg-gray-200 dark:hover:bg-[#333028] transition-colors"
-          >
+                       hover:bg-gray-200 dark:hover:bg-[#333028] transition-colors">
             {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
           </button>
         </div>
 
         <main className="flex-1 overflow-y-auto px-6 py-8">
           <div className="max-w-4xl mx-auto">
-
             <div className="mb-8">
               <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                 Calories <span className="text-amber-500">Tracker</span>
@@ -188,16 +182,13 @@ export default function CaloriesPage() {
                     </div>
                   </div>
                   {error && <p className="text-red-500 text-xs">{error}</p>}
-                  <button
-                    onClick={handlePredict} disabled={loading}
+                  <button onClick={handlePredict} disabled={loading}
                     className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-50
                                text-white font-bold py-3 rounded-xl transition-colors
-                               flex items-center justify-center gap-2"
-                  >
+                               flex items-center justify-center gap-2">
                     {loading
                       ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      : <><Flame size={16} /> Predict Calories</>
-                    }
+                      : <><Flame size={16} /> Predict Calories</>}
                   </button>
                 </div>
               </div>
@@ -263,9 +254,7 @@ export default function CaloriesPage() {
                 <div className="h-48 flex flex-col items-center justify-center text-center">
                   <Flame size={28} className="text-gray-300 dark:text-gray-600 mb-3" />
                   <p className="text-gray-400 dark:text-gray-500 text-sm">No predictions yet.</p>
-                  <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
-                    Fill in your workout details above and click Predict.
-                  </p>
+                  <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">Fill in your workout details above and click Predict.</p>
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height={280}>
@@ -281,26 +270,19 @@ export default function CaloriesPage() {
                     />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
                     <Bar dataKey="Calories Burned" fill="#f59e0b" radius={[6,6,0,0]} maxBarSize={48}>
-                      <LabelList
-                        dataKey="Calories Burned"
-                        position="top"
+                      <LabelList dataKey="Calories Burned" position="top"
                         style={{ fontSize: '11px', fill: '#f59e0b', fontWeight: 'bold' }}
-                        formatter={(v: any) => `${Number(v).toFixed(0)}`}
-                      />
+                        formatter={(v: any) => `${Number(v).toFixed(0)}`} />
                     </Bar>
                     <Bar dataKey="Energy Needed" fill="#10b981" radius={[6,6,0,0]} maxBarSize={48}>
-                      <LabelList
-                        dataKey="Energy Needed"
-                        position="top"
+                      <LabelList dataKey="Energy Needed" position="top"
                         style={{ fontSize: '11px', fill: '#10b981', fontWeight: 'bold' }}
-                        formatter={(v: any) => `${Number(v).toFixed(0)}`}
-                      />
+                        formatter={(v: any) => `${Number(v).toFixed(0)}`} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               )}
             </div>
-
           </div>
         </main>
       </div>

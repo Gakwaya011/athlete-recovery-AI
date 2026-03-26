@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Zap, Sun, Moon, Menu, Flame, ChevronRight } from 'lucide-react';
+import { useDarkMode } from '../hooks/useDarkMode';
 import { Sidebar } from '../components/layout/Sidebar';
 import { useAuth } from '../context/AuthContext';
 import { Logo } from '../components/ui/Logo';
@@ -18,17 +19,13 @@ interface Session {
 }
 
 export default function DashboardPage() {
-  const { user }                          = useAuth();
-  const navigate                          = useNavigate();
-  const [sidebarOpen, setSidebarOpen]     = useState(false);
-  const [isDarkMode, setIsDarkMode]       = useState(true);
+  const { user }                            = useAuth();
+  const navigate                            = useNavigate();
+  const { isDarkMode, toggleDark }          = useDarkMode();
+  const [sidebarOpen, setSidebarOpen]       = useState(false);
   const [recentSessions, setRecentSessions] = useState<Session[]>([]);
 
   const firstName = user?.full_name?.split(' ')[0] || 'Athlete';
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-  }, [isDarkMode]);
 
   useEffect(() => {
     const token = localStorage.getItem('mwili_token');
@@ -72,26 +69,20 @@ export default function DashboardPage() {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
 
-        {/* Top bar */}
         <div className="flex items-center justify-between px-5 py-3
                         border-b border-gray-200 dark:border-[#2e2b27]
                         bg-white dark:bg-[#1c1a17]">
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-gray-500 dark:text-gray-400"
-            >
+            <button onClick={() => setSidebarOpen(true)}
+              className="lg:hidden text-gray-500 dark:text-gray-400">
               <Menu size={20} />
             </button>
             <Logo size="sm" />
           </div>
-          <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
+          <button onClick={toggleDark}
             className="w-8 h-8 rounded-full flex items-center justify-center
-                       bg-gray-100 dark:bg-[#2a2723]
-                       text-gray-500 dark:text-gray-400
-                       hover:bg-gray-200 dark:hover:bg-[#333028] transition-colors"
-          >
+                       bg-gray-100 dark:bg-[#2a2723] text-gray-500 dark:text-gray-400
+                       hover:bg-gray-200 dark:hover:bg-[#333028] transition-colors">
             {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
           </button>
         </div>
@@ -99,7 +90,6 @@ export default function DashboardPage() {
         <main className="flex-1 overflow-y-auto px-6 py-10">
           <div className="max-w-2xl mx-auto">
 
-            {/* Greeting */}
             <div className="mb-10">
               <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                 Hi there, <span className="text-amber-500">{firstName}</span>
@@ -109,7 +99,6 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* New session card */}
             <div
               onClick={() => navigate('/chat', { state: { new: true } })}
               className="bg-white dark:bg-[#2a2723] border border-gray-200
@@ -137,7 +126,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Recent sessions */}
             <div className="bg-white dark:bg-[#2a2723] border border-gray-200
                             dark:border-[#3a3630] rounded-2xl p-6">
               <div className="flex items-center justify-between mb-4">
@@ -145,10 +133,8 @@ export default function DashboardPage() {
                   Recent Sessions
                 </h3>
                 {recentSessions.length > 0 && (
-                  <button
-                    onClick={() => navigate('/history')}
-                    className="text-xs text-amber-500 hover:text-amber-400 transition-colors"
-                  >
+                  <button onClick={() => navigate('/history')}
+                    className="text-xs text-amber-500 hover:text-amber-400 transition-colors">
                     View all →
                   </button>
                 )}
@@ -189,7 +175,6 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
-
           </div>
         </main>
       </div>
