@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Plus, Home, FolderOpen, Clock, Settings, LogOut, Flame } from 'lucide-react';
+import { Plus, Home, Clock, Settings, LogOut, Flame, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../ui/Logo';
 
@@ -16,10 +16,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNewChat }) 
   const { user, logout } = useAuth();
 
   const navItems = [
-    { icon: <Home size={16} />,       label: 'Home',      path: '/dashboard' },
-    { icon: <Flame size={16} />,      label: 'Calories',  path: '/calories' },
-    { icon: <FolderOpen size={16} />, label: 'My Plans',  path: '/history' },
-    { icon: <Clock size={16} />,      label: 'Recent',    path: '/history' },
+    { icon: <Home size={16} />,           label: 'Dashboard', path: '/dashboard' },
+    { icon: <MessageSquare size={16} />,  label: 'Chat',      path: '/chat' },
+    { icon: <Flame size={16} />,          label: 'Calories',  path: '/calories' },
+    { icon: <Clock size={16} />,          label: 'History',   path: '/history' },
   ];
 
   const handleNav = (path: string) => {
@@ -51,8 +51,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNewChat }) 
         lg:translate-x-0 lg:static lg:z-auto
       `}>
 
-        {/* Logo */}
-        <div className="flex items-center justify-center py-5 border-b border-gray-200 dark:border-[#2e2b27]">
+        {/* Logo — click to go to landing page */}
+        <div
+          className="flex items-center justify-center py-5 border-b border-gray-200
+                     dark:border-[#2e2b27] cursor-pointer"
+          onClick={() => { navigate('/'); onClose(); }}
+          title="Go to home"
+        >
           <Logo collapsed />
         </div>
 
@@ -77,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNewChat }) 
               title={item.label}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors
                 ${location.pathname === item.path
-                  ? 'bg-white dark:bg-[#2a2723] text-gray-900 dark:text-white shadow-sm'
+                  ? 'bg-white dark:bg-[#2a2723] text-amber-500 shadow-sm'
                   : 'text-gray-400 dark:text-gray-500 hover:bg-white dark:hover:bg-[#2a2723] hover:text-gray-900 dark:hover:text-white'
                 }`}
             >
