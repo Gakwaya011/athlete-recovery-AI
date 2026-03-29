@@ -6,8 +6,8 @@ import LoginPage     from './pages/LoginPage';
 import RegisterPage  from './pages/RegisterPage';
 import ChatPage      from './pages/ChatPage';
 import DashboardPage from './pages/DashboardPage';
-import HistoryPage     from './pages/HistoryPage';
-import CaloriesPage    from './pages/CaloriesPage';
+import HistoryPage   from './pages/HistoryPage';
+import CaloriesPage  from './pages/CaloriesPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
